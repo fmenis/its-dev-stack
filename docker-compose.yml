@@ -1,51 +1,12 @@
 version: '3.1'
 services:
-  postgres:
-    container_name: postgres
-    image: postgres:12.4
-    restart: always
-    ports: 
-      - 5432:5432
-    volumes:
-      - ./data/postgresql:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: test
-      PGDATA: /var/lib/postgresql/data/pgdata
   redis:
     container_name: redis
-    image: redis:6
+    build: 
+      context: ./images/redis
+    image: redis-custom
     restart: always
     ports:
       - 6379:6379
     volumes:
       - ./data/redis:/data
-  portainer:
-    container_name: portainer
-    image: portainer/portainer:latest
-    restart: always
-    ports:
-      - 9000:9000
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./data/portainer_data:/data
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    depends_on: 
-     - postgres
-    restart: always
-    ports:
-      - 8000:80
-    environment:
-      PGADMIN_DEFAULT_EMAIL: filippomeniswork@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: test
-  redis-commander:
-    container_name: redis-commander
-    image: rediscommander/redis-commander:latest
-    depends_on: 
-     - redis
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - 8081:8081
