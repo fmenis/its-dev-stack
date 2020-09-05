@@ -13,3 +13,12 @@ Build development stack for "Its managment System"
 
 ### Build and launch containers
 - docker-compose up -d
+- docker-compose down
+
+
+### Postgreql
+- access postgres via psql --> docker container exec -it postgres psql -U postgres
+
+### Redis
+- access redis via redis-cli --> ocker container exec -it redis redis-cli
+
