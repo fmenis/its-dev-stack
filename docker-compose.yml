@@ -2,7 +2,9 @@ version: '3.1'
 services:
   postgres:
     container_name: postgres
-    image: postgres:12.4
+    image: postgres-custom
+    build:
+      context: ./custom_images/postgres/
     restart: always
     ports: 
       - 5432:5432
@@ -37,7 +39,7 @@ services:
     ports:
       - 8000:80
     environment:
-      PGADMIN_DEFAULT_EMAIL: filippomeniswork@gmail.com
+      PGADMIN_DEFAULT_EMAIL: dev
       PGADMIN_DEFAULT_PASSWORD: test
   redis-commander:
     container_name: redis-commander
