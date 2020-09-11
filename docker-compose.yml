@@ -1,25 +1,55 @@
-version: '3.1'
+version: '3.5'
+
 services:
   postgres:
     container_name: postgres
     image: postgres:12.4
     restart: always
-    ports: 
-      - 5432:5432
+    networks:
+      - database
     volumes:
       - ./data/postgresql:/var/lib/postgresql/data
       - ./containers_stuff/postgres/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
     environment:
       POSTGRES_PASSWORD: test
       PGDATA: /var/lib/postgresql/data/pgdata
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    depends_on: 
+      - postgres
+    restart: always
+    ports:
+      - 8000:80
+    networks: 
+      - database
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev
+      PGADMIN_DEFAULT_PASSWORD: test
+
   redis:
     container_name: redis
     image: redis:6
     restart: always
-    ports:
-      - 6379:6379
+    networks: 
+      - cache
     volumes:
       - ./data/redis:/data
+
+  redis-commander:
+    container_name: redis-commander
+    image: rediscommander/redis-commander:latest
+    depends_on: 
+      - redis
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - 8081:8081
+    networks: 
+      - cache
+
   portainer:
     container_name: portainer
     image: portainer/portainer:latest
@@ -29,24 +59,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data/portainer_data:/data
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    depends_on: 
-     - postgres
-    restart: always
-    ports:
-      - 8000:80
-    environment:
-      PGADMIN_DEFAULT_EMAIL: dev
-      PGADMIN_DEFAULT_PASSWORD: test
-  redis-commander:
-    container_name: redis-commander
-    image: rediscommander/redis-commander:latest
-    depends_on: 
-     - redis
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - 8081:8081
+
+networks:
+  database:
+    name: database
+  cache:
+    name: cache
